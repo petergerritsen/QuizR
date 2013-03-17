@@ -1,0 +1,22 @@
+﻿body {
+    font-family: Verdana, Arial;
+}
+
+input.pushButton {
+    display: block;
+    height: 150px;
+    width : 150px;
+    background-color: #efcb00;
+    border: solid 2px #000;
+    cursor: pointer; 
+    text-align:center; 
+    vertical-align:middle;
+}
+
+.winner {
+    background-color: #00ff21 !important;
+}
+
+.loser {
+    background-color: #f00 !important;
+}

@@ -1,0 +1,93 @@
+﻿@{
+    ViewBag.Title = "Create a quiz";
+}
+
+<h2>Create a quiz</h2>
+
+<audio id="team1" src="@Url.Content("~/Content/Train Horn Low-SoundBible.com-1744689113.mp3")"></audio>
+<audio id="team2" src="@Url.Content("~/Content/Two Tone Doorbell-SoundBible.com-1238551671.mp3")"></audio>
+
+<input type="button" id="btnPlaySound1" value="Play sound Team 1"/>
+<input type="button" id="btnPlaySound2" value="Play sound Team 2"/><br /><br />
+
+<div id="frmCreate">
+    <label for="quizname">Quiz name</label><br />
+    <input id="quizname" name="quizname" /><br /><br />
+
+    <label for="teamnames">Team names (separate with '#')</label><br />
+    <input id="teamnames" name="teamnames" /><br /><br />
+
+    <input type="button" id="btnCreate" value="Create quiz!"/><br />
+</div>
+
+<div id="quizMonitor" style="display: none;">
+    <h3>
+        <span id="title"></span>
+    </h3>
+
+    <input type="button" id="btnUnblock" value="Unblock clients"/><br /><br />
+    
+    Results:<br />
+    <div id="results"></div><br />
+    Messages:<br />
+    <div id="messages"></div>
+
+    
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnPlaySound1").click(function () {
+            document.getElementById("team1").play();
+        });
+        $("#btnPlaySound2").click(function () {
+            document.getElementById("team2").play();
+        });
+
+        // Declare a proxy to reference the hub. 
+        var quiz = $.connection.quizHub;
+
+        quiz.client.connected = function (name) {
+            $("#messages").prepend("Connected: " + name + "<br/>");
+        };
+        quiz.client.leave = function (name) {
+            $("#messages").prepend("Left: " + name + "<br/>");
+        };
+        quiz.client.rejoined = function (name) {
+            $("#messages").prepend("Rejoined: " + name + "<br/>");
+        };
+        quiz.client.joined = function (name) {
+            $("#messages").prepend("Joined: " + name + "<br/>");
+        };
+        quiz.client.block = function (name, teamname) {
+            $("#results").html(name);
+            $("#btnUnblock").removeAttr('disabled');
+            if ($("#teamnames").val().indexOf(teamname) == 0) {
+                document.getElementById("team1").play();
+            } else {
+                document.getElementById("team2").play();
+            }
+        };
+        quiz.client.unblock = function () {
+            $("#btnUnblock").addAttr('disabled');
+        };
+        
+        $.connection.hub.logging = true;
+        $.connection.hub.start().done(function () {
+
+            $("#btnCreate").click(function () {
+                var created = quiz.server.create($("#quizname").val(), $("#teamnames").val());
+                if (created) {
+                    $("#frmCreate").hide();
+                    $("#quizMonitor").show();
+                    $("#title").html("Quiz: " + $("#quizname").val() + " - Teams: " + $("#teamnames").val());
+                } else {
+                    alert("Unable to create quiz");
+                }
+            });
+
+            $("#btnUnblock").click(function () {
+                quiz.server.unblock($("#quizname").val());                
+            });
+        });
+    });
+</script>

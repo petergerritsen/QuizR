@@ -1,0 +1,79 @@
+﻿@{
+    ViewBag.Title = "Play";
+}
+
+<h2>Play</h2>
+
+<div id="frmPlay">
+    <label for="quizname">Quiz name</label><br />
+    <input id="quizname" name="quizname" /><br /><br />
+
+    <label for="teamname">Team name</label><br />
+    <input id="teamname" name="teamname" /><br /><br />
+    
+    <label for="username">User name</label><br />
+    <input id="username" name="username" /><br /><br />
+
+    <input type="button" id="btnJoin" value="Join quiz!"/>
+</div>
+
+<div id="quizMonitor" style="display:none;">
+    <input class="pushButton" id="btnPush" value="I know the answer" /><br /><br />
+    
+    Results:<br />
+    <div id="results"></div><br />
+    Messages:<br />
+    <div id="messages"></div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        // Declare a proxy to reference the hub. 
+        var quiz = $.connection.quizHub;
+            
+        quiz.client.connected = function (name) {
+            $("#messages").prepend("Connected: " + name + "<br/>");
+        };
+        quiz.client.leave = function (name) {
+            $("#messages").prepend("Left: " + name + "<br/>");
+        };
+        quiz.client.rejoined = function (name) {
+            $("#messages").prepend("Rejoined: " + name + "<br/>");
+        };
+        quiz.client.joined = function (name) {
+            $("#messages").prepend("Joined: " + name + "<br/>");
+        };
+        quiz.client.block = function (name, teamname) {
+            $("#results").html(name + " was the fastest");
+            $("#btnPush").addAttr('disabled');
+        };
+        quiz.client.unblock = function () {
+            $("#results").html("");
+            $("#btnPush").removeAttr('disabled');
+            $("#btnPush").removeClass("winner");
+            $("#btnPush").removeClass("loser");
+        };
+
+        $.connection.hub.logging = true;
+        $.connection.hub.start().done(function () {
+
+            $("#btnJoin").click(function () {
+                var joined = quiz.server.join($("#quizname").val(), $("#teamname").val(), $("#username").val());
+                if (joined) {
+                    $("#frmPlay").hide();
+                    $("#quizMonitor").show();
+                } else {
+                    alert("Unable to join quiz");
+                }
+            });
+
+            $("#btnPush").click(function () {
+                var fastest = quiz.server.pushButton();
+                //if (fastest) {
+                //    $("#btnPush").addClass("winner");
+                //} else {
+                //    $("#btnPush").addClass("loser");
+                //}
+            });
+        });
+    });
+</script>
