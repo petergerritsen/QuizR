@@ -61,6 +61,11 @@
                 if (joined) {
                     $("#frmPlay").hide();
                     $("#quizMonitor").show();
+
+                    document.onkeydown = function (evt) {
+                        evt = evt || window.event;
+                        var fastest = quiz.server.pushButton();
+                    };
                 } else {
                     alert("Unable to join quiz");
                 }
@@ -74,6 +79,7 @@
                 //    $("#btnPush").addClass("loser");
                 //}
             });
+
         });
     });
 </script>

@@ -6,9 +6,12 @@
 
 <audio id="team1" src="@Url.Content("~/Content/Train Horn Low-SoundBible.com-1744689113.mp3")"></audio>
 <audio id="team2" src="@Url.Content("~/Content/Two Tone Doorbell-SoundBible.com-1238551671.mp3")"></audio>
+<audio id="sadtrombone" src="@Url.Content("~/Content/sadtrombone.swf.mp3")"></audio>
 
 <input type="button" id="btnPlaySound1" value="Play sound Team 1"/>
-<input type="button" id="btnPlaySound2" value="Play sound Team 2"/><br /><br />
+<input type="button" id="btnPlaySound2" value="Play sound Team 2"/>
+<input type="button" id="btnPlaySound3" value="Play Sad Trombone"/>
+<br /><br />
 
 <div id="frmCreate">
     <label for="quizname">Quiz name</label><br />
@@ -42,6 +45,9 @@
         $("#btnPlaySound2").click(function () {
             document.getElementById("team2").play();
         });
+        $("#btnPlaySound3").click(function () {
+            document.getElementById("sadtrombone").play();
+        });
 
         // Declare a proxy to reference the hub. 
         var quiz = $.connection.quizHub;
@@ -68,6 +74,7 @@
             }
         };
         quiz.client.unblock = function () {
+            $("#results").html("New round started");
             $("#btnUnblock").addAttr('disabled');
         };
         
